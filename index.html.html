@@ -1,0 +1,1721 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Juanita's desktop - ready</title>
+
+  <style>
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", Arial, sans-serif;
+      background: #f0f0f4;
+      overflow: hidden;
+    }
+
+    .computer {
+      width: 1120px;
+      height: 640px;
+      position: relative;
+      overflow: hidden;
+      border-radius: 12px;
+      background: #ddd;
+      box-shadow: 0 24px 60px rgba(0,0,0,0.12);
+    }
+
+    .background-image {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      z-index: 0;
+    }
+
+    .top-bar {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 34px;
+      z-index: 20;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 40px 0 10px;
+      color: rgba(255,255,255,0.93);
+      font-size: 13px;
+      background: rgba(124, 118, 118, 0.58);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+    }
+
+    .top-left, .top-right {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      white-space: nowrap;
+    }
+
+    .apple-logo {
+      width: 14px;
+      height: 14px;
+      object-fit: contain;
+      display: block;
+    }
+
+    .search-box {
+      width: 170px;
+      height: 20px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 0 9px;
+      border-radius: 11px;
+      background: rgba(255,255,255,0.18);
+      color: rgba(255,255,255,0.72);
+    }
+
+    .stars {
+      letter-spacing: 2px;
+      opacity: 0.78;
+    }
+
+    .desktop-layer {
+      position: absolute;
+      inset: 34px 0 0 0;
+      z-index: 2;
+    }
+
+    .desktop-app {
+      position: absolute;
+      width: 76px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      background: transparent;
+      border: none;
+      padding: 0;
+      cursor: pointer;
+    }
+
+    .desktop-app img {
+      width: 68px;
+      height: 68px;
+      object-fit: contain;
+      filter: drop-shadow(0 5px 6px rgba(0,0,0,0.14));
+      transition: transform 0.15s ease;
+    }
+
+    .desktop-app:hover img {
+      transform: translateY(-2px) scale(1.04);
+    }
+
+    .desktop-app-label {
+      font-size: 12px;
+      line-height: 1.15;
+      color: rgb(78, 76, 76);
+      text-align: center;
+      text-shadow: 0 1px 3px rgba(255,255,255,0.4);
+      white-space: nowrap;
+    }
+
+    .desktop-widget {
+      position: absolute;
+      border: none;
+      padding: 0;
+      background: transparent;
+      cursor: pointer;
+    }
+
+    .desktop-widget img {
+      display: block;
+      width: 100%;
+      height: auto;
+      filter: drop-shadow(0 4px 5px rgba(0,0,0,0.16));
+      transition: transform 0.15s ease;
+    }
+
+    .desktop-widget:hover img {
+      transform: translateY(-2px) scale(1.02);
+    }
+
+    .desktop-widget.no-open {
+      cursor: default;
+    }
+
+    .desktop-widget.no-open:hover img {
+      transform: none;
+    }
+
+    .calendar-widget {
+      left: 32px;
+      top: 250px;
+      width: 155px;
+      margin-top: 0;
+    }
+
+    .spotify-widget {
+      left: 200px;
+      top: 252px;
+      width: 150px;
+      margin-top: 0;
+    }
+
+    .dock {
+      position: absolute;
+      left: 50%;
+      bottom: 56px;
+      transform: translateX(-50%);
+      height: 52px;
+      z-index: 18;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 6px 13px;
+      border-radius: 16px;
+      background: rgba(255,255,255,0.34);
+      border: 1px solid rgba(255,255,255,0.32);
+      box-shadow: 0 8px 22px rgba(0,0,0,0.10);
+      backdrop-filter: blur(18px) saturate(1.2);
+      -webkit-backdrop-filter: blur(18px) saturate(1.2);
+    }
+
+    .dock-item {
+      position: relative;
+      width: 36px;
+      height: 40px;
+      border: none;
+      padding: 0;
+      background: transparent;
+      cursor: pointer;
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+    }
+
+    .dock-item img {
+      width: 35px;
+      height: 35px;
+      object-fit: contain;
+      transition: transform 0.16s ease;
+    }
+
+    .dock-item:hover img {
+      transform: translateY(-4px) scale(1.09);
+    }
+
+    .dock-item.no-open {
+      cursor: default;
+    }
+
+    .dock-item.no-open:hover img {
+      transform: none;
+    }
+
+    .dock-item::after {
+      content: "";
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 3px;
+      height: 3px;
+      border-radius: 50%;
+      background: rgba(90,90,90,0.38);
+    }
+
+    .dock-separator {
+      width: 1px;
+      height: 28px;
+      margin: 0 3px;
+      background: rgba(255,255,255,0.48);
+    }
+
+    .window {
+      display: none;
+      position: absolute;
+      top: 74px;
+      left: 260px;
+      width: 430px;
+      height: 315px;
+      z-index: 30;
+      overflow: hidden;
+      border-radius: 18px;
+      background: rgba(246,246,248,0.82);
+      border: 1px solid rgba(255,255,255,0.52);
+      box-shadow: 0 18px 45px rgba(0,0,0,0.20);
+      backdrop-filter: blur(22px);
+      -webkit-backdrop-filter: blur(22px);
+    }
+
+    .window-header {
+      height: 40px;
+      display: flex;
+      align-items: center;
+      padding: 0 14px;
+      background: #f7f7f7;
+      border-bottom: 1px solid rgba(0,0,0,0.05);
+      cursor: grab;
+      user-select: none;
+      position: relative;
+      z-index: 20;
+    }
+
+    .window.dragging .window-header {
+      cursor: grabbing;
+    }
+
+    .window.image-window .window-title {
+      display: none;
+    }
+
+    .window.image-window .window-header {
+      justify-content: flex-start;
+    }
+
+    .window-lights {
+      display: flex;
+      gap: 7px;
+      position: relative;
+      z-index: 25;
+      pointer-events: auto;
+    }
+
+    .window-btn {
+      width: 12px;
+      height: 12px;
+      border: none;
+      border-radius: 50%;
+      padding: 0;
+    }
+
+    .close-btn { background: #ff5f57; cursor: pointer; }
+    .min-btn { background: #febc2e; }
+    .max-btn { background: #28c840; }
+
+    .window-title {
+      flex: 1;
+      margin-left: -54px;
+      text-align: center;
+      font-size: 14px;
+      font-weight: 600;
+      color: #333;
+    }
+
+    .window-content {
+      height: calc(100% - 40px);
+      padding: 20px;
+      overflow-y: auto;
+      color: #333;
+      background: #ffffff;
+      position: relative;
+      z-index: 1;
+    }
+
+    .window-content h2 {
+      margin: 0 0 8px;
+      font-size: 24px;
+    }
+
+    .window-content p {
+      margin: 0 0 10px;
+      font-size: 14px;
+      line-height: 1.45;
+      color: #555;
+    }
+
+    .full-image-no-scroll {
+      padding: 0;
+      overflow: hidden;
+      background: #ffffff;
+    }
+
+    .full-image-no-scroll img {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+
+    .full-image-scroll {
+      padding: 0;
+      overflow-y: auto;
+      overflow-x: hidden;
+      background: #ffffff;
+    }
+
+    .full-image-scroll img {
+      display: block;
+      width: 100%;
+      height: auto;
+    }
+
+    #reminders-window {
+      top: 56px;
+      left: 110px;
+      width: 250px;
+      height: 420px;
+    }
+
+    #messages-window {
+      top: 58px;
+      left: 92px;
+      width: 350px;
+      height: 500px;
+    }
+
+    #notes-window {
+      top: 48px;
+      left: 190px;
+      width: 520px;
+      height: 360px;
+    }
+
+    #archives-window {
+      top: 62px;
+      left: 245px;
+      width: 560px;
+      height: 395px;
+    }
+
+#trash-window {
+  top: 64px;
+  left: auto;
+  right: 20px;
+  width: 450px;
+  height: 410px;
+}
+
+#trash-window .window-content {
+  padding: 0;
+  background: transparent;
+  overflow: hidden;
+}
+
+#trash-window .window-content img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+}
+
+    #settings-window {
+      top: 50px;
+      left: 190px;
+      width: 760px;
+      height: 395px;
+    }
+
+    #settings-window .window-content {
+      overflow: hidden;
+    }
+
+    #photos-window {
+      top: 70px;
+      right: 100px;
+      width: 800px;
+      height: 400px;
+    }
+
+    .photos-content {
+      padding: 0;
+      overflow-x: auto;
+      overflow-y: hidden;
+      white-space: nowrap;
+      background: #ffffff;
+      scrollbar-width: thin;
+      scrollbar-color: rgba(120,120,128,0.35) transparent;
+      scroll-behavior: smooth;
+    }
+
+    .photos-content::-webkit-scrollbar {
+      height: 10px;
+    }
+
+    .photos-content::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    .photos-content::-webkit-scrollbar-thumb {
+      background: rgba(120,120,128,0.35);
+      border-radius: 999px;
+      border: 2px solid transparent;
+      background-clip: content-box;
+    }
+
+    .camera-roll-image {
+      display: block;
+      height: 100%;
+      width: auto;
+      min-width: max-content;
+    }
+
+    .popup-overlay {
+      display: none;
+      position: absolute;
+      inset: 0;
+      z-index: 80;
+      justify-content: center;
+      align-items: center;
+      background: rgba(50,50,55,0.16);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+    }
+
+    .popup {
+      width: 330px;
+      padding: 22px;
+      border-radius: 22px;
+      text-align: center;
+      background: rgba(245,245,247,0.92);
+      border: 1px solid rgba(255,255,255,0.58);
+      box-shadow: 0 22px 60px rgba(0,0,0,0.22);
+    }
+
+    .popup-icon {
+      width: 66px;
+      height: 66px;
+      margin: 0 auto 14px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      border-radius: 18px;
+      background: rgba(255,255,255,0.72);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.85);
+    }
+
+    .popup-icon img {
+      width: 46px;
+      height: 46px;
+      object-fit: contain;
+    }
+
+    .popup h3 {
+      margin: 0 0 7px;
+      font-size: 18px;
+      color: #2d2d2f;
+    }
+
+    .popup p {
+      margin: 0 0 14px;
+      font-size: 14px;
+      line-height: 1.4;
+      color: #62626a;
+    }
+
+    .popup input {
+      width: 100%;
+      height: 42px;
+      padding: 0 12px;
+      border: 1px solid rgba(0,0,0,0.10);
+      border-radius: 12px;
+      outline: none;
+      font-size: 14px;
+      background: rgba(255,255,255,0.78);
+    }
+
+    .popup-message {
+      height: 22px;
+      padding-top: 5px;
+      color: #cf3b32;
+      font-size: 13px;
+    }
+
+    .popup-buttons {
+      display: flex;
+      gap: 10px;
+      margin-top: 6px;
+    }
+
+    .popup-buttons button {
+      flex: 1;
+      height: 39px;
+      border: none;
+      border-radius: 11px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+
+    .secondary-btn {
+      background: rgba(0,0,0,0.06);
+      color: #555;
+    }
+
+    .primary-btn {
+      background: #111;
+      color: white;
+    }
+
+    .settings-content {
+      padding: 22px 28px 10px;
+      overflow: hidden;
+      background: linear-gradient(180deg, rgba(255,255,255,0.98), rgba(248,248,250,0.95));
+    }
+
+    .settings-content h2 {
+      margin: 0 0 6px;
+      font-size: 26px;
+      font-weight: 700;
+      color: #202027;
+      letter-spacing: -0.03em;
+    }
+
+    .settings-content > p {
+      margin: 0 0 16px;
+      font-size: 14px;
+      color: #7a7a84;
+    }
+
+    .settings-sentence {
+      font-size: 16px;
+      line-height: 2.05;
+      color: #2f2f35;
+      letter-spacing: -0.02em;
+      font-weight: 400;
+    }
+
+    .settings-input {
+      width: 128px;
+      height: 42px;
+      padding: 0 14px;
+      margin: 3px 3px;
+      border: 1px solid rgba(0,0,0,0.08);
+      border-radius: 15px;
+      font-size: 15px;
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", Arial, sans-serif;
+      background: #f3f3f6;
+      color: #2f2f35;
+      vertical-align: middle;
+      transition: border-color 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+    }
+
+    .settings-input:focus {
+      outline: none;
+      border-color: rgba(0,122,255,0.35);
+      box-shadow: 0 0 0 4px rgba(0,122,255,0.10);
+      background: #ffffff;
+    }
+
+    .settings-input.correct {
+      border-color: rgba(52,199,89,0.45);
+      background: rgba(52,199,89,0.06);
+      box-shadow: 0 0 0 3px rgba(52,199,89,0.10);
+    }
+
+    .settings-input.wrong {
+      border-color: rgba(233,123,178,0.98);
+      background: rgba(255,192,221,0.16);
+      box-shadow: 0 0 0 4px rgba(236,122,185,0.28);
+    }
+
+    .settings-actions {
+      display: block;
+      margin-top: 10px;
+    }
+
+    .settings-check-btn,
+    .settings-clear-btn {
+      flex: 1;
+      height: 42px;
+      border: none;
+      border-radius: 16px;
+      cursor: pointer;
+      font-size: 15px;
+    }
+
+    .settings-result {
+      margin-top: 6px;
+      min-height: 0;
+      font-size: 13px;
+      color: #666;
+    }
+
+    .settings-submit-btn {
+      width: 180px;
+      height: 42px;
+      border: none;
+      border-radius: 16px;
+      cursor: pointer;
+      font-size: 15px;
+      background: linear-gradient(180deg, #111111, #1e1e1e);
+      color: white;
+    }
+
+    .settings-success-screen {
+      display: none;
+      width: 100%;
+      height: 100%;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      background: linear-gradient(180deg, rgba(255,255,255,0.98), rgba(249,240,246,0.96));
+      color: #1f1f24;
+      font-size: 40px;
+      font-weight: 700;
+      letter-spacing: -0.03em;
+    }
+
+
+    #maps-window {
+      top: 58px;
+      left: 180px;
+      width: 760px;
+      height: 470px;
+    }
+
+    .maps-content {
+      padding: 0;
+      overflow: hidden;
+      position: relative;
+      background:
+        radial-gradient(circle at 28% 22%, rgba(255,255,255,0.96), rgba(246,247,250,0.94) 45%, rgba(233,236,242,0.94));
+    }
+
+    .maps-shell {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+    }
+
+    #globe-container {
+      position: absolute;
+      inset: 0 0 0 0;
+      background:
+        radial-gradient(circle at 28% 24%, rgba(248,250,253,0.98), rgba(232,238,247,0.98) 52%, rgba(217,225,237,0.99));
+    }
+
+    .maps-glow {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      background:
+        radial-gradient(circle at 36% 42%, rgba(255,255,255,0.20), rgba(255,255,255,0) 34%),
+        radial-gradient(circle at 66% 40%, rgba(255,255,255,0.12), rgba(255,255,255,0) 28%);
+      z-index: 1;
+    }
+
+    .maps-topbar {
+      position: absolute;
+      top: 18px;
+      left: 18px;
+      right: 18px;
+      z-index: 5;
+      display: flex;
+      justify-content: flex-start;
+      align-items: flex-start;
+      pointer-events: none;
+    }
+
+    .maps-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 14px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.76);
+      border: 1px solid rgba(255,255,255,0.7);
+      box-shadow: 0 10px 24px rgba(0,0,0,0.08);
+      color: #4b5563;
+      font-size: 13px;
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      pointer-events: auto;
+    }
+
+    .maps-help {
+      max-width: 250px;
+      padding: 11px 14px;
+      border-radius: 16px;
+      background: rgba(255,255,255,0.72);
+      border: 1px solid rgba(255,255,255,0.68);
+      box-shadow: 0 10px 24px rgba(0,0,0,0.08);
+      color: #5b6470;
+      font-size: 13px;
+      line-height: 1.4;
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      pointer-events: auto;
+
+      position: absolute;
+      right: 18px;
+      top: 320px;
+      z-index: 5;
+    }
+
+    .maps-focus-chip {
+      position: absolute;
+      left: 18px;
+      bottom: 18px;
+      z-index: 5;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px 15px;
+      border-radius: 18px;
+      background: rgba(255,255,255,0.78);
+      border: 1px solid rgba(255,255,255,0.74);
+      box-shadow: 0 12px 26px rgba(0,0,0,0.08);
+      color: #2f3742;
+      font-size: 14px;
+      font-weight: 600;
+      letter-spacing: -0.01em;
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      transition: transform 0.28s ease, opacity 0.28s ease;
+    }
+
+    .maps-focus-chip.bump {
+      transform: translateY(-2px) scale(1.02);
+    }
+
+    .maps-flag-badge {
+      width: 42px;
+      height: 42px;
+      border-radius: 14px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(255,255,255,0.94);
+      box-shadow: 0 8px 18px rgba(0,0,0,0.08);
+      font-size: 24px;
+      line-height: 1;
+      flex-shrink: 0;
+    }
+
+    .maps-panel {
+      position: absolute;
+      top: 18px;
+      right: 18px;
+      width: 250px;
+      min-height: 190px;
+      z-index: 6;
+      padding: 18px 18px 16px;
+      border-radius: 22px;
+      background: rgba(255,255,255,0.82);
+      border: 1px solid rgba(255,255,255,0.82);
+      box-shadow: 0 18px 40px rgba(0,0,0,0.12);
+      color: #2d3440;
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      transform: translateX(calc(100% + 24px));
+      transition: transform 0.38s ease, opacity 0.38s ease;
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .maps-panel.visible {
+      transform: translateX(0);
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .maps-panel h3 {
+      margin: 0 0 10px 0;
+      font-size: 24px;
+      line-height: 1.05;
+      letter-spacing: -0.03em;
+      color: #1f2733;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .maps-panel-flag {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 34px;
+      height: 34px;
+      border-radius: 12px;
+      background: rgba(255,255,255,0.95);
+      box-shadow: 0 8px 16px rgba(0,0,0,0.06);
+      font-size: 20px;
+      line-height: 1;
+      flex-shrink: 0;
+    }
+
+    .maps-panel p {
+      margin: 0;
+      font-size: 14px;
+      line-height: 1.55;
+      color: #5c6470;
+    }
+
+    .maps-panel-tag {
+      display: inline-block;
+      margin-bottom: 10px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: rgba(244,209,216,0.55);
+      color: #8b5a67;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.03em;
+      text-transform: none;
+    }
+
+    .maps-password-hint {
+      position: absolute;
+      left: 18px;
+      bottom: 92px;
+      z-index: 5;
+      display: inline-block;
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: rgba(244, 209, 216, 0.55);
+      color: #8b5a67;
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0;
+      text-transform: none;
+      box-shadow: 0 10px 24px rgba(0,0,0,0.08);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+    }
+
+    .shutdown-overlay {
+      display: none;
+      position: absolute;
+      inset: 0;
+      z-index: 120;
+      background: rgba(248,248,250,0.96);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 24px;
+    }
+
+    .shutdown-message {
+      font-size: 34px;
+      line-height: 1.2;
+      font-weight: 700;
+      letter-spacing: -0.03em;
+      color: #1f1f24;
+    }
+  </style>
+</head>
+<body>
+  <main class="computer">
+    <img src="./imagenes/fondo_hd.png" class="background-image" alt="desktop background" />
+
+    <header class="top-bar">
+      <div class="top-left">
+        <img src="./imagenes/logo.png" class="apple-logo" alt="Apple logo" />
+        <span>Juanita's desktop</span>
+      </div>
+
+      <div class="top-right">
+        <div class="search-box">⌕ <span>Search</span></div>
+        <span class="stars">☆ ☆ ☆ ☆ ☆ ☆</span>
+        <span>Sunday May 17</span>
+        <span>9:41 AM</span>
+      </div>
+    </header>
+
+    <section class="desktop-layer">
+      <button class="desktop-app" style="left: 28px; top: 26px;" onclick="openWindow('reminders-window')">
+        <img src="./imagenes/iconos/recordatorios1.png" alt="Reminders" />
+        <span class="desktop-app-label">Reminders</span>
+      </button>
+
+      <button class="desktop-app" style="left: 132px; top: 26px;" onclick="askPassword('notes')">
+        <img src="./imagenes/iconos/Notes.png" alt="Notes" />
+        <span class="desktop-app-label">Notes</span>
+      </button>
+
+      <button class="desktop-app" style="left: 236px; top: 26px;" onclick="askPassword('archives')">
+        <img src="./imagenes/iconos/Archive.png" alt="Archives" />
+        <span class="desktop-app-label">Archives</span>
+      </button>
+
+      <button class="desktop-app" style="left: 340px; top: 26px;" onclick="askPassword('trash')">
+        <img src="./imagenes/iconos/Trash.png" alt="Trash" />
+        <span class="desktop-app-label">Trash</span>
+      </button>
+
+      <button class="desktop-app" style="left: 28px; top: 132px;" onclick="askPassword('photos')">
+        <img src="./imagenes/iconos/Photos.png" alt="Photos" />
+        <span class="desktop-app-label">Photos</span>
+      </button>
+
+      <button class="desktop-app" style="left: 132px; top: 132px;" onclick="askPassword('messages')">
+        <img src="./imagenes/iconos/Messages.png" alt="Messages" />
+        <span class="desktop-app-label">Messages</span>
+      </button>
+
+      <button class="desktop-app" style="left: 236px; top: 132px;" onclick="askPassword('maps')">
+        <img src="./imagenes/iconos/Maps.png" alt="Maps" />
+        <span class="desktop-app-label">Maps</span>
+      </button>
+
+      <button class="desktop-app" style="left: 340px; top: 132px;" onclick="askPassword('settings')">
+        <img src="./imagenes/iconos/settings.png" alt="Settings" />
+        <span class="desktop-app-label">Settings</span>
+      </button>
+
+      <div class="desktop-widget calendar-widget no-open" aria-label="Calendar widget">
+        <img src="./imagenes/Calendar.png" alt="Calendar widget" />
+      </div>
+
+      <div class="desktop-widget spotify-widget no-open" aria-label="Spotify widget">
+        <img src="./imagenes/widget.png" alt="Spotify widget" />
+      </div>
+    </section>
+
+    <section class="window image-window" id="reminders-window">
+      <div class="window-header">
+        <div class="window-lights">
+          <button class="window-btn close-btn" data-close-window="reminders-window"></button>
+          <button class="window-btn min-btn"></button>
+          <button class="window-btn max-btn"></button>
+        </div>
+        <div class="window-title">Reminders</div>
+      </div>
+      <div class="window-content full-image-no-scroll">
+        <img src="./imagenes/Reminders.png" alt="Reminders window" />
+      </div>
+    </section>
+
+    <section class="window image-window" id="notes-window">
+      <div class="window-header">
+        <div class="window-lights">
+          <button class="window-btn close-btn" data-close-window="notes-window"></button>
+          <button class="window-btn min-btn"></button>
+          <button class="window-btn max-btn"></button>
+        </div>
+        <div class="window-title">Notes</div>
+      </div>
+      <div class="window-content full-image-no-scroll">
+        <img src="./imagenes/Notes.png" alt="Notes window" />
+      </div>
+    </section>
+
+    <section class="window image-window" id="trash-window">
+      <div class="window-header">
+        <div class="window-lights">
+          <button class="window-btn close-btn" data-close-window="trash-window"></button>
+          <button class="window-btn min-btn"></button>
+          <button class="window-btn max-btn"></button>
+        </div>
+        <div class="window-title">Trash</div>
+      </div>
+      <div class="window-content full-image-no-scroll">
+        <img src="./imagenes/Trash.png" alt="Trash window" />
+      </div>
+    </section>
+
+    <section class="window image-window" id="archives-window">
+      <div class="window-header">
+        <div class="window-lights">
+          <button class="window-btn close-btn" data-close-window="archives-window"></button>
+          <button class="window-btn min-btn"></button>
+          <button class="window-btn max-btn"></button>
+        </div>
+        <div class="window-title">Archives</div>
+      </div>
+      <div class="window-content full-image-no-scroll">
+        <img src="./imagenes/Archives.png" alt="Archives window" />
+      </div>
+    </section>
+
+    <section class="window image-window" id="messages-window">
+      <div class="window-header">
+        <div class="window-lights">
+          <button class="window-btn close-btn" data-close-window="messages-window"></button>
+          <button class="window-btn min-btn"></button>
+          <button class="window-btn max-btn"></button>
+        </div>
+        <div class="window-title">Messages</div>
+      </div>
+      <div class="window-content full-image-scroll">
+        <img src="./imagenes/messagesScroll.png" alt="Messages window" />
+      </div>
+    </section>
+
+    <section class="window" id="photos-window">
+      <div class="window-header">
+        <div class="window-lights">
+          <button class="window-btn close-btn" data-close-window="photos-window"></button>
+          <button class="window-btn min-btn"></button>
+          <button class="window-btn max-btn"></button>
+        </div>
+      </div>
+      <div class="window-content photos-content">
+        <img src="./imagenes/Camera roll.png" alt="Camera roll" class="camera-roll-image" />
+      </div>
+    </section>
+
+    <section class="window" id="maps-window">
+      <div class="window-header">
+        <div class="window-lights">
+          <button class="window-btn close-btn" data-close-window="maps-window"></button>
+          <button class="window-btn min-btn"></button>
+          <button class="window-btn max-btn"></button>
+        </div>
+        <div class="window-title">Maps</div>
+      </div>
+      <div class="window-content maps-content">
+        <div class="maps-shell">
+          <div id="globe-container"></div>
+          <div class="maps-glow"></div>
+
+          <div class="maps-topbar">
+            <div class="maps-badge">Visited countries · 20 stops</div>
+            <div class="maps-help">Use <strong>arrows</strong> to move through countries. Use your mouse to rotate and zoom.</div>
+          </div>
+
+          <div class="maps-focus-chip" id="maps-focus-chip">
+            <span class="maps-flag-badge" id="maps-focus-flag">🇦🇷</span>
+            <span id="maps-focus-text">Argentina · 1 / 20</span>
+          </div>
+          <div class="maps-password-hint">Settings' password: true to me</div>
+
+          <aside class="maps-panel" id="maps-panel">
+            <h3 id="maps-panel-title"><span class="maps-panel-flag" id="maps-panel-flag">🇦🇷</span><span id="maps-panel-title-text">Argentina</span></h3>
+            <p id="maps-panel-text">Home. The place that shaped my way of speaking, seeing, and moving through the world.</p>
+          </aside>
+        </div>
+      </div>
+    </section>
+
+    <section class="window" id="settings-window">
+      <div class="window-header">
+        <div class="window-lights">
+          <button class="window-btn close-btn" data-close-window="settings-window"></button>
+          <button class="window-btn min-btn"></button>
+          <button class="window-btn max-btn"></button>
+        </div>
+        <div class="window-title">Settings</div>
+      </div>
+      <div class="window-content settings-content" id="settings-main-content">
+        <h2>Complete the phrase</h2>
+        <p>Use the passwords you collected across the desktop and put them in the order displayed.</p>
+
+        <div class="settings-sentence">
+          I am not one fixed version of
+          <input class="settings-input" id="input-myself" placeholder="..." />,
+          but a
+          <input class="settings-input" id="input-combination" placeholder="..." />
+          of
+          <input class="settings-input" id="input-details" placeholder="..." />,
+          <input class="settings-input" id="input-contradictions" placeholder="..." />
+          and
+          <input class="settings-input" id="input-constants" placeholder="..." />.
+          <br>
+          <input class="settings-input" id="input-together" placeholder="..." />,
+          they create the
+          only code
+          that feels
+          <input class="settings-input" id="input-true-to-me" placeholder="..." />.
+        </div>
+
+        <div class="settings-actions">
+          <button class="settings-submit-btn settings-check-btn" onclick="submitSettingsPhrase()">Done</button>
+        </div>
+
+        <div class="settings-result" id="settings-result"></div>
+      </div>
+      <div class="window-content settings-success-screen" id="settings-success-screen">
+        You decoded me!
+      </div>
+    </section>
+
+    <div class="popup-overlay" id="popup-overlay">
+      <div class="popup">
+        <div class="popup-icon">
+          <img id="popup-icon-img" src="./imagenes/iconos/Notes.png" alt="App icon" />
+        </div>
+        <h3 id="popup-title">Open app</h3>
+        <p id="popup-text">Escribí la contraseña para abrir esta app.</p>
+        <input type="password" id="password-input" placeholder="Password" />
+        <div class="popup-message" id="popup-message"></div>
+        <div class="popup-buttons">
+          <button class="secondary-btn" onclick="closePopup()">Close</button>
+          <button class="primary-btn" onclick="checkPassword()">Open</button>
+        </div>
+      </div>
+    </div>
+
+    <nav class="dock">
+      <button class="dock-item no-open" type="button" aria-label="Finder">
+        <img src="./imagenes/iconos/finder.png" alt="Finder" />
+      </button>
+
+      <button class="dock-item no-open" type="button" aria-label="Apps">
+        <img src="./imagenes/iconos/apps.png" alt="Apps" />
+      </button>
+
+      <button class="dock-item no-open" type="button" aria-label="Safari">
+        <img src="./imagenes/iconos/safari.png" alt="Safari" />
+      </button>
+
+      <button class="dock-item" onclick="askPassword('messages')">
+        <img src="./imagenes/iconos/Messages.png" alt="Messages" />
+      </button>
+
+      <button class="dock-item" onclick="askPassword('maps')">
+        <img src="./imagenes/iconos/Maps.png" alt="Maps" />
+      </button>
+
+      <button class="dock-item" onclick="askPassword('photos')">
+        <img src="./imagenes/iconos/Photos.png" alt="Photos" />
+      </button>
+
+      <button class="dock-item no-open" type="button" aria-label="Calendar">
+        <img src="./imagenes/iconos/calendar.png" alt="Calendar" />
+      </button>
+
+      <button class="dock-item" onclick="askPassword('notes')">
+        <img src="./imagenes/iconos/Notes.png" alt="Notes" />
+      </button>
+
+      <button class="dock-item" onclick="openWindow('reminders-window')">
+        <img src="./imagenes/iconos/recordatorios.png" alt="Reminders" />
+      </button>
+
+      <button class="dock-item" onclick="askPassword('archives')">
+        <img src="./imagenes/iconos/Archive.png" alt="Archives" />
+      </button>
+
+      <div class="dock-separator"></div>
+
+      <button class="dock-item" onclick="askPassword('trash')">
+        <img src="./imagenes/iconos/Trash.png" alt="Trash" />
+      </button>
+
+      <button class="dock-item" onclick="askPassword('settings')">
+        <img src="./imagenes/iconos/settings.png" alt="Settings" />
+      </button>
+
+    </nav>
+
+    <div class="shutdown-overlay" id="shutdown-overlay">
+      <div class="shutdown-message">You decoded me!<br>Shutting down.</div>
+    </div>
+  </main>
+
+  <script>
+    const appPasswords = {
+      notes: "myself",
+      archives: "combination",
+      trash: "contradictions",
+      photos: "details",
+      messages: "constants",
+      maps: "Together",
+      settings: "true to me",
+    };
+
+    const appData = {
+      notes: {
+        title: "Notes",
+        text: "What I keep in mind",
+        icon: "./imagenes/iconos/Notes.png"
+      },
+      trash: {
+        title: "Trash",
+        text: "What I’m still learning",
+        icon: "./imagenes/iconos/Trash.png"
+      },
+      archives: {
+        title: "Archives",
+        text: "My digital toolkit",
+        icon: "./imagenes/iconos/Archive.png"
+      },
+      messages: {
+        title: "Messages",
+        text: "Who I text",
+        icon: "./imagenes/iconos/Messages.png"
+      },
+      photos: {
+        title: "Photos",
+        text: "What surrounds me",
+        icon: "./imagenes/iconos/Photos.png"
+      },
+      maps: {
+        title: "Maps",
+        text: "A map of my memories",
+        icon: "./imagenes/iconos/Maps.png"
+      },
+      settings: {
+        title: "Settings",
+        text: "How it all comes together",
+        icon: "./imagenes/iconos/settings.png"
+      },
+    };
+
+    let currentApp = "";
+    let zIndexCounter = 40;
+    let unlockedApps = [];
+
+    function askPassword(appName) {
+      currentApp = appName;
+
+      if (unlockedApps.includes(appName)) {
+        openWindow(appName + "-window");
+        return;
+      }
+
+      document.getElementById("popup-title").textContent = "Open " + appData[appName].title;
+      document.getElementById("popup-text").textContent = appData[appName].text;
+      document.getElementById("popup-icon-img").src = appData[appName].icon;
+      document.getElementById("password-input").value = "";
+      document.getElementById("popup-message").textContent = "";
+      document.getElementById("popup-overlay").style.display = "flex";
+      document.getElementById("password-input").focus();
+    }
+
+    function checkPassword() {
+      const input = document.getElementById("password-input").value;
+
+      if (input === appPasswords[currentApp]) {
+        if (!unlockedApps.includes(currentApp)) {
+          unlockedApps.push(currentApp);
+        }
+
+        closePopup();
+        openWindow(currentApp + "-window");
+      } else {
+        document.getElementById("popup-message").textContent = "Incorrect password";
+      }
+    }
+
+    function openWindow(windowId) {
+      const windowElement = document.getElementById(windowId);
+      windowElement.style.display = "block";
+      windowElement.style.zIndex = zIndexCounter;
+      zIndexCounter++;
+
+      if (windowId === "maps-window") {
+        initMapsGlobe();
+      }
+    }
+
+    function closeWindow(windowId) {
+      document.getElementById(windowId).style.display = "none";
+    }
+
+    function closePopup() {
+      document.getElementById("popup-overlay").style.display = "none";
+    }
+
+    document.getElementById("password-input").addEventListener("keydown", function(event) {
+      if (event.key === "Enter") {
+        checkPassword();
+      }
+    });
+
+    function submitSettingsPhrase() {
+      const fields = [
+        { id: 'input-myself', expected: 'myself' },
+        { id: 'input-combination', expected: 'combination' },
+        { id: 'input-details', expected: 'details' },
+        { id: 'input-contradictions', expected: 'contradictions' },
+        { id: 'input-constants', expected: 'constants' },
+        { id: 'input-together', expected: 'together' },
+        { id: 'input-true-to-me', expected: 'true to me' }
+      ];
+
+      let allCorrect = true;
+
+      fields.forEach((field) => {
+        const input = document.getElementById(field.id);
+        const value = input.value.trim().toLowerCase();
+
+        input.classList.remove('correct', 'wrong');
+
+        if (value === field.expected) {
+          input.classList.add('correct');
+        } else {
+          input.classList.add('wrong');
+          allCorrect = false;
+        }
+      });
+
+      const result = document.getElementById('settings-result');
+
+      if (allCorrect) {
+        document.getElementById('settings-main-content').style.display = 'none';
+        document.getElementById('settings-success-screen').style.display = 'flex';
+      } else {
+        result.textContent = 'Some words are not ok';
+      }
+    }
+
+
+
+    const mapCountries = [
+      { name: 'Argentina', lat: -38.4161, lng: -63.6167, altitude: 1.08, flag: '🇦🇷', aliases: ['Argentina'] },
+      { name: 'Armenia', lat: 40.0691, lng: 45.0382, altitude: 0.92, flag: '🇦🇲', aliases: ['Armenia'] },
+      { name: 'Austria', lat: 47.5162, lng: 14.5501, altitude: 0.90, flag: '🇦🇹', aliases: ['Austria'] },
+      { name: 'Belgium', lat: 50.5039, lng: 4.4699, altitude: 0.90, flag: '🇧🇪', aliases: ['Belgium'] },
+      { name: 'Brazil', lat: -14.2350, lng: -51.9253, altitude: 1.02, flag: '🇧🇷', aliases: ['Brazil'] },
+      { name: 'Czech Republic', lat: 49.8175, lng: 15.4730, altitude: 0.90, flag: '🇨🇿', aliases: ['Czech Republic', 'Czechia'] },
+      { name: 'France', lat: 46.2276, lng: 2.2137, altitude: 0.94, flag: '🇫🇷', aliases: ['France'] },
+      { name: 'Germany', lat: 51.1657, lng: 10.4515, altitude: 0.92, flag: '🇩🇪', aliases: ['Germany'] },
+      { name: 'Greece', lat: 39.0742, lng: 21.8243, altitude: 0.95, flag: '🇬🇷', aliases: ['Greece'] },
+      { name: 'Hungary', lat: 47.1625, lng: 19.5033, altitude: 0.90, flag: '🇭🇺', aliases: ['Hungary'] },
+      { name: 'Italy', lat: 41.8719, lng: 12.5674, altitude: 0.95, flag: '🇮🇹', aliases: ['Italy'] },
+      { name: 'Liechtenstein', lat: 47.1660, lng: 9.5554, altitude: 0.82, flag: '🇱🇮', aliases: ['Liechtenstein'] },
+      { name: 'Malta', lat: 35.9375, lng: 14.3754, altitude: 0.82, flag: '🇲🇹', aliases: ['Malta'] },
+      { name: 'Morocco', lat: 31.7917, lng: -7.0926, altitude: 0.98, flag: '🇲🇦', aliases: ['Morocco'] },
+      { name: 'Netherlands', lat: 52.1326, lng: 5.2913, altitude: 0.90, flag: '🇳🇱', aliases: ['Netherlands'] },
+      { name: 'Spain', lat: 40.4637, lng: -3.7492, altitude: 0.96, flag: '🇪🇸', aliases: ['Spain'] },
+      { name: 'Switzerland', lat: 46.8182, lng: 8.2275, altitude: 0.84, flag: '🇨🇭', aliases: ['Switzerland'] },
+      { name: 'UK',  lat: 55.3781,  lng: -3.4360,  altitude: 0.98,  flag: '🇬🇧',  aliases: [ 'UK', 'United Kingdom',    'Great Britain',    'England',    'Scotland',   'Wales', 'Northern Ireland'] },
+      { name: 'United States', lat: 37.0902, lng: -95.7129, altitude: 1.12, flag: '🇺🇸', aliases: [ 'United States', 'United States of America', 'USA', 'US', 'America'] },
+      { name: 'Uruguay', lat: -32.5228, lng: -55.7658, altitude: 0.96, flag: '🇺🇾', aliases: ['Uruguay'] }
+    ];
+
+    const featuredMapStories = {
+      'Argentina': {
+        title: 'Argentina',
+        text: 'Home. The place that shaped my way of speaking, seeing, and moving through the world.'
+      },
+      'Switzerland': {
+        title: 'Switzerland',
+        text: 'A chapter of independence, exchange, and becoming a slightly different version of myself.'
+      },
+      'Armenia': {
+        title: 'Armenia',
+        text: 'A place connected to identity, inheritance, and a part of me that feels deeply rooted.'
+      }
+    };
+
+    const countryNameLookup = {};
+    mapCountries.forEach((country) => {
+      country.aliases.forEach((alias) => {
+        countryNameLookup[alias.toLowerCase()] = country.name;
+      });
+    });
+
+    let mapsGlobe = null;
+    let mapsInitialized = false;
+    let currentCountryIndex = 0;
+    let countryPolygons = [];
+
+    function updateMapsPanel(countryName) {
+      const panel = document.getElementById('maps-panel');
+      const title = document.getElementById('maps-panel-title-text');
+      const text = document.getElementById('maps-panel-text');
+      const flag = document.getElementById('maps-panel-flag');
+
+      const current = mapCountries.find((item) => item.name === countryName);
+
+      if (featuredMapStories[countryName]) {
+        title.textContent = featuredMapStories[countryName].title;
+        text.textContent = featuredMapStories[countryName].text;
+        flag.textContent = current ? current.flag : '🌍';
+        panel.classList.add('visible');
+      } else {
+        panel.classList.remove('visible');
+      }
+    }
+
+    function updateMapsFocusChip() {
+      const chip = document.getElementById('maps-focus-chip');
+      const chipText = document.getElementById('maps-focus-text');
+      const chipFlag = document.getElementById('maps-focus-flag');
+      const country = mapCountries[currentCountryIndex];
+
+      chipText.textContent = `${country.name} · ${currentCountryIndex + 1} / ${mapCountries.length}`;
+      chipFlag.textContent = country.flag || '🌍';
+
+      chip.classList.remove('bump');
+      void chip.offsetWidth;
+      chip.classList.add('bump');
+    }
+
+    function refreshCountryPolygons() {
+      if (!mapsGlobe) return;
+      mapsGlobe.polygonsData(countryPolygons);
+    }
+
+    function focusCountry(index, animate = true) {
+      if (!mapsGlobe) return;
+      currentCountryIndex = (index + mapCountries.length) % mapCountries.length;
+      const country = mapCountries[currentCountryIndex];
+
+      mapsGlobe.pointOfView(
+        { lat: country.lat, lng: country.lng, altitude: country.altitude },
+        animate ? 1750 : 0
+      );
+
+      updateMapsFocusChip();
+      updateMapsPanel(country.name);
+
+      mapsGlobe.pointsData(
+        mapCountries.map((item, idx) => ({
+          ...item,
+          isActive: idx === currentCountryIndex,
+          size: idx === currentCountryIndex ? 0.18 : 0.072
+        }))
+      );
+
+      refreshCountryPolygons();
+    }
+
+    function nextMapCountry() {
+      focusCountry(currentCountryIndex + 1);
+    }
+
+    function createMinimalGlobeTexture() {
+      const canvas = document.createElement('canvas');
+      canvas.width = 2048;
+      canvas.height = 1024;
+      const ctx = canvas.getContext('2d');
+
+      const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
+      gradient.addColorStop(0, '#f8fbff');
+      gradient.addColorStop(0.45, '#eef3fa');
+      gradient.addColorStop(1, '#e4ebf5');
+      ctx.fillStyle = gradient;
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      for (let i = 0; i < 24; i++) {
+        ctx.fillStyle = `rgba(255,255,255,${0.05 + (i % 4) * 0.01})`;
+        const x = (i * 131) % canvas.width;
+        const y = (i * 73) % canvas.height;
+        const r = 160 + (i % 5) * 22;
+        ctx.beginPath();
+        ctx.arc(x, y, r, 0, Math.PI * 2);
+        ctx.fill();
+      }
+
+      return canvas.toDataURL('image/png');
+    }
+
+    function initMapsGlobe() {
+      if (mapsInitialized) {
+        focusCountry(currentCountryIndex, false);
+        return;
+      }
+
+      const container = document.getElementById('globe-container');
+      const minimalTexture = createMinimalGlobeTexture();
+
+      mapsGlobe = Globe()(container)
+        .width(container.clientWidth)
+        .height(container.clientHeight)
+        .backgroundColor('rgba(0,0,0,0)')
+        .globeImageUrl(minimalTexture)
+        .showAtmosphere(true)
+        .atmosphereColor('#d8e6ff')
+        .atmosphereAltitude(0.06)
+        .pointAltitude((d) => d.isActive ? 0.02 : 0.008)
+        .pointColor((d) => d.isActive ? '#ff7f73' : '#f0b7a7')
+        .pointRadius((d) => d.size || 0.08)
+        .pointResolution(22)
+        .pointsData(mapCountries.map((item, idx) => ({
+          ...item,
+          isActive: idx === 0,
+          size: idx === 0 ? 0.18 : 0.072
+        })))
+        .pointLat('lat')
+        .pointLng('lng')
+        .pointLabel((d) => `<div style="padding:8px 10px;font-size:12px;font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text',Arial,sans-serif;">${d.flag || '🌍'} ${d.name}</div>`)
+        .onPointClick((point) => {
+          const index = mapCountries.findIndex((item) => item.name === point.name);
+          if (index !== -1) focusCountry(index);
+        });
+
+      mapsGlobe.controls().autoRotate = false;
+      mapsGlobe.controls().enablePan = false;
+      mapsGlobe.controls().minDistance = 135;
+      mapsGlobe.controls().maxDistance = 300;
+      mapsGlobe.controls().rotateSpeed = 0.62;
+      mapsGlobe.controls().zoomSpeed = 0.85;
+
+      fetch('https://raw.githubusercontent.com/holtzy/D3-graph-gallery/master/DATA/world.geojson')
+        .then((response) => response.json())
+        .then((geojson) => {
+          countryPolygons = geojson.features;
+
+          mapsGlobe
+            .polygonsData(countryPolygons)
+            .polygonCapColor((feat) => {
+              const name = countryNameLookup[(feat.properties.name || '').toLowerCase()];
+              const active = name === mapCountries[currentCountryIndex].name;
+              const visited = !!name;
+
+              if (active) return 'rgba(255,127,115,0.42)';
+              if (visited) return 'rgba(255,255,255,0.18)';
+              return 'rgba(255,255,255,0.05)';
+            })
+            .polygonStrokeColor((feat) => {
+              const name = countryNameLookup[(feat.properties.name || '').toLowerCase()];
+              const active = name === mapCountries[currentCountryIndex].name;
+              const visited = !!name;
+
+              if (active) return 'rgba(47,55,67,1)';
+              if (visited) return 'rgba(94,108,126,0.82)';
+              return 'rgba(122,134,151,0.52)';
+            })
+            .polygonSideColor(() => 'rgba(0,0,0,0)')
+            .polygonAltitude((feat) => {
+              const name = countryNameLookup[(feat.properties.name || '').toLowerCase()];
+              const active = name === mapCountries[currentCountryIndex].name;
+              return active ? 0.0024 : 0.00045;
+            })
+            .polygonsTransitionDuration(520)
+            .polygonLabel((feat) => {
+              const name = countryNameLookup[(feat.properties.name || '').toLowerCase()];
+              if (!name) return '';
+              const country = mapCountries.find((item) => item.name === name);
+              return `<div style="padding:8px 10px;font-size:12px;font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text',Arial,sans-serif;">${country ? country.flag : '🌍'} ${name}</div>`;
+            });
+
+          refreshCountryPolygons();
+        })
+        .catch((error) => {
+          console.error('Could not load country polygons', error);
+        });
+
+      mapsInitialized = true;
+      focusCountry(0, false);
+
+      window.addEventListener('resize', () => {
+        if (!mapsGlobe) return;
+        mapsGlobe.width(container.clientWidth);
+        mapsGlobe.height(container.clientHeight);
+      });
+    }
+
+    document.addEventListener('keydown', (event) => {
+      const mapsWindow = document.getElementById('maps-window');
+      if (mapsWindow.style.display !== 'block') return;
+
+      if (event.code === 'Space' || event.key === 'ArrowRight') {
+        event.preventDefault();
+        nextMapCountry();
+      }
+
+      if (event.key === 'ArrowLeft') {
+        event.preventDefault();
+        focusCountry(currentCountryIndex - 1);
+      }
+    });
+
+
+
+    document.querySelectorAll('.close-btn').forEach((btn) => {
+      btn.addEventListener('mousedown', (event) => {
+        event.stopPropagation();
+        event.preventDefault();
+      });
+
+      btn.addEventListener('click', (event) => {
+        event.stopPropagation();
+        event.preventDefault();
+        const win = btn.closest('.window');
+        if (win) {
+          win.style.display = 'none';
+        }
+      });
+    });
+
+    document.querySelectorAll('.window-btn, .settings-check-btn, .settings-submit-btn').forEach((btn) => {
+      btn.addEventListener('mousedown', (event) => {
+        event.stopPropagation();
+      });
+
+      btn.addEventListener('click', (event) => {
+        event.stopPropagation();
+      });
+    });
+
+
+    document.addEventListener('click', (event) => {
+      const closeBtn = event.target.closest('.close-btn[data-close-window]');
+      if (!closeBtn) return;
+
+      event.preventDefault();
+      event.stopPropagation();
+
+      const windowId = closeBtn.getAttribute('data-close-window');
+      const windowElement = document.getElementById(windowId);
+      if (windowElement) {
+        windowElement.style.display = 'none';
+      }
+    }, true);
+
+
+    const mapsCloseButton = document.querySelector('#maps-window .close-btn');
+    if (mapsCloseButton) {
+      mapsCloseButton.addEventListener('pointerdown', (event) => {
+        event.preventDefault();
+        event.stopPropagation();
+      });
+
+      mapsCloseButton.addEventListener('pointerup', (event) => {
+        event.preventDefault();
+        event.stopPropagation();
+        closeWindow('maps-window');
+      });
+    }
+
+    const draggableWindows = document.querySelectorAll('.window');
+
+    draggableWindows.forEach((win) => {
+      const header = win.querySelector('.window-header');
+      let isDragging = false;
+      let offsetX = 0;
+      let offsetY = 0;
+
+      header.addEventListener('mousedown', (event) => {
+        if (event.target.closest('.window-btn, .window-lights')) return;
+
+        isDragging = true;
+        win.classList.add('dragging');
+        win.style.zIndex = zIndexCounter;
+        zIndexCounter++;
+
+        const rect = win.getBoundingClientRect();
+        offsetX = event.clientX - rect.left;
+        offsetY = event.clientY - rect.top;
+      });
+
+      document.addEventListener('mousemove', (event) => {
+        if (!isDragging) return;
+
+        const computer = document.querySelector('.computer');
+        const computerRect = computer.getBoundingClientRect();
+        const winRect = win.getBoundingClientRect();
+
+        let newLeft = event.clientX - computerRect.left - offsetX;
+        let newTop = event.clientY - computerRect.top - offsetY;
+
+        const minLeft = 0;
+        const minTop = 34;
+        const maxLeft = computerRect.width - winRect.width;
+        const maxTop = computerRect.height - winRect.height;
+
+        newLeft = Math.max(minLeft, Math.min(newLeft, maxLeft));
+        newTop = Math.max(minTop, Math.min(newTop, maxTop));
+
+        win.style.left = newLeft + 'px';
+        win.style.top = newTop + 'px';
+      });
+
+      document.addEventListener('mouseup', () => {
+        if (isDragging) {
+          isDragging = false;
+          win.classList.remove('dragging');
+        }
+      });
+    });
+  </script>
+  <script src="https://unpkg.com/three"></script>
+  <script src="https://unpkg.com/globe.gl"></script>
+</body>
+</html>
